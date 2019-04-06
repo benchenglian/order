@@ -13,7 +13,7 @@ cd $PROJ_PATH/princeqjzh
 mvn clean install
 
 #准备ROOT.war包
-cd $PROJ_PATH/princeqjzh/target
+cd $PROJ_PATH/target
 mv order.war ROOT.war
 
 #制作新的docker image - iweb
