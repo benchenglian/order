@@ -9,37 +9,19 @@
 # export TOMCAT_APP_PATH=tomcat在部署机器上的路径
 
 ### base 函数
-killTomcat()
-{
-    pid=`ps -ef|grep tomcat|grep java|awk '{print $2}'`
-    echo "tomcat Id list :$pid"
-    if [ "$pid" = "" ]
-    then
-      echo "no tomcat pid alive"
-    else
-      kill -9 $pid
-    fi
-}
-cd $PROJ_PATH/order
+cd $PROJ_PATH/princeqjzh
 mvn clean install
 
-# 停tomcat
-killTomcat
-
-# 删除原有工程
-rm -rf $TOMCAT_APP_PATH/webapps/ROOT
-rm -f $TOMCAT_APP_PATH/webapps/ROOT.war
-rm -f $TOMCAT_APP_PATH/webapps/order.war
-
-# 复制新的工程
-cp $PROJ_PATH/order/target/order.war $TOMCAT_APP_PATH/webapps/
-
-cd $TOMCAT_APP_PATH/webapps/
+#准备ROOT.war包
+cd $PROJ_PATH/princeqjzh/target
 mv order.war ROOT.war
 
-# 启动Tomcat
-cd $TOMCAT_APP_PATH/
-sh bin/startup.sh
+#制作新的docker image - iweb
+cd $PROJ_PATH/princeqjzh
+docker stop orderObj
+docker rm orderObj
+docker rmi order
+docker build -t order .
 
-
-
+# 启动docker image，宿主机暴露端口 8111
+docker run --name orderObj -d -p 8111:8080 order
